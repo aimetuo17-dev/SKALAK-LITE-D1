@@ -1,0 +1,8 @@
+{
+  "appId": "com.skalak.elite",
+  "appName": "SKALAK ÉLITE",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: skalak-predict-ai
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - key: API_FOOTBALL_KEY
+        sync: false

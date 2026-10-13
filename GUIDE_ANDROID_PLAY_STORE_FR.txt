@@ -1,0 +1,26 @@
+# Guide Android et Google Play — SKALAK ÉLITE
+
+## Ce que contient ce ZIP
+Le projet de départ inclut l'interface web mobile, un serveur Flask de base, les routes API, et la configuration de départ Capacitor. Il ne contient pas d'APK/AAB compilé et ne signifie pas que les données, cotes, statistiques ou analyses IA sont déjà pleinement intégrées.
+
+## Avant de compiler
+1. Déployer le serveur `server/app.py` sur Render avec la racine de déploiement appropriée ou adapter le projet à la structure actuelle.
+2. Ajouter `API_FOOTBALL_KEY` comme variable d'environnement secrète sur Render.
+3. Choisir/configurer un fournisseur IA et compléter `/api/ai-analysis` dans `server/app.py`; ajouter sa clé côté serveur, jamais dans l'interface.
+4. Ajouter une intégration de cotes/statistiques qui respecte le forfait et les conditions du fournisseur.
+5. Tester les routes `/api/health`, `/api/fixtures`, `/api/match-analysis` et `/api/ai-analysis`.
+
+## Compilation Android
+La compilation Capacitor nécessite un environnement de développement avec Node.js, Java JDK et Android Studio. Les commandes usuelles, depuis la racine du projet, sont :
+- `npm install`
+- `npx cap add android`
+- `npx cap sync android`
+- `npx cap open android`
+
+Dans Android Studio, générer un APK pour tester et un Android App Bundle (AAB) signé pour la publication. Les versions d'outils, le niveau API cible et les règles Play Console doivent être vérifiés au moment de la publication.
+
+## Google Play
+La publication n'est pas automatique : il faut un compte développeur Google Play Console, compléter la fiche de l'application, fournir icône et captures d'écran, renseigner la politique de confidentialité et la déclaration de sécurité des données, définir la classification du contenu, effectuer les tests requis et soumettre l'AAB pour examen. Google peut exiger des tests fermés selon le type et l'état du compte.
+
+## Politique d'analyse sportive
+Présenter les probabilités comme estimations. Ne jamais garantir un gain. Ne pas fabriquer des cotes ou statistiques quand le fournisseur n'en retourne pas.

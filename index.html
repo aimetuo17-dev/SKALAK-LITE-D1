@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SKALAK ÉLITE — Centre d’analyses</title>
+<style>
+:root{color-scheme:dark;--bg:#090a0d;--panel:#14161b;--panel2:#1b1e25;--gold:#d6ad45;--muted:#a8afbd;--line:#30343d;--green:#67d6a0;--red:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#242016 0,#090a0d 48%);color:#f5f5f5;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}header{padding:24px 16px 18px;border-bottom:1px solid var(--line);background:#0b0c0fdd}header,main{max-width:1050px;margin:auto}.brand{font-size:12px;letter-spacing:.2em;color:var(--gold);font-weight:800}.title{font-size:clamp(26px,5vw,38px);font-weight:850;margin:4px 0}.subtitle{color:var(--muted);margin:0}.wrap{padding:18px 14px 40px;max-width:1050px;margin:auto}.notice{border:1px solid #6b5522;background:#201b10;color:#f5df9d;padding:12px 14px;border-radius:12px;margin-bottom:16px}.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.card{background:linear-gradient(160deg,var(--panel),#101115);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.card h2{font-size:17px;margin:0 0 12px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.muted{color:var(--muted)}.field{width:100%;background:#0c0d11;border:1px solid var(--line);border-radius:10px;color:#fff;padding:12px;font:inherit;margin:5px 0 12px}.btn{border:0;border-radius:10px;background:var(--gold);color:#17130a;font-weight:800;padding:12px 15px;font:inherit;cursor:pointer}.btn.secondary{background:var(--panel2);color:#fff;border:1px solid var(--line)}.btn:disabled{opacity:.55;cursor:wait}.match{border:1px solid var(--line);border-radius:12px;padding:13px;margin:9px 0;background:#0d0f13}.teams{font-weight:800;font-size:16px}.tag{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 8px;color:var(--muted);font-size:12px}.odds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.odd{background:#0a0b0e;border:1px solid var(--line);border-radius:10px;text-align:center;padding:10px 4px}.odd strong{display:block;color:var(--gold);font-size:18px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.stat{background:#0c0d11;border:1px solid var(--line);border-radius:10px;padding:11px}.stat strong{display:block;font-size:20px;color:var(--gold)}.analysis{white-space:pre-wrap;color:#e8eaf0;background:#0b0d10;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:115px}.small{font-size:12px;color:var(--muted)}.pill{color:var(--green)}footer{padding-top:14px;color:var(--muted);font-size:12px}@media(max-width:760px){.grid{grid-template-columns:1fr}.wrap{padding:14px 10px 30px}.card{padding:13px}}
+</style>
+</head>
+<body>
+<header><div class="brand">SKALAK ÉLITE</div><div class="title">Centre d’analyses football</div><p class="subtitle">Matchs · cotes · statistiques · assistant d’analyse</p></header>
+<main class="wrap">
+<div class="notice"><strong>Connexion requise :</strong> cette page est l’interface d’analyse. Pour afficher de vraies cotes, statistiques et analyses IA, le serveur doit fournir les données et connecter un service d’IA. Les données de démonstration ne sont pas utilisées.</div>
+<div class="grid">
+<section class="card"><div class="row"><h2>Choisir un match</h2><span class="tag" id="apiStatus">Serveur à vérifier</span></div>
+<label for="matchSelect" class="muted">Match disponible</label><select id="matchSelect" class="field"><option value="">Chargement des matchs…</option></select>
+<label for="league" class="muted">Compétition (facultatif)</label><input id="league" class="field" placeholder="Ex. Premier League">
+<div class="row"><button class="btn" id="loadBtn">Charger les données</button><button class="btn secondary" id="refreshBtn">Actualiser</button></div>
+<div id="matchCard" class="match"><div class="teams">Aucun match sélectionné</div><p class="muted">Les matchs seront affichés lorsque l’API du serveur sera connectée.</p></div>
+<h2>Probabilités estimées</h2><div class="odds"><div class="odd">Domicile<strong id="pHome">—</strong></div><div class="odd">Nul<strong id="pDraw">—</strong></div><div class="odd">Extérieur<strong id="pAway">—</strong></div></div>
+<p class="small">Les probabilités sont des estimations et ne garantissent aucun résultat.</p>
+</section>
+<section class="card"><h2>Statistiques du match</h2><div class="stats"><div class="stat"><span class="muted">Forme domicile</span><strong id="homeForm">—</strong></div><div class="stat"><span class="muted">Forme extérieur</span><strong id="awayForm">—</strong></div><div class="stat"><span class="muted">Buts domicile / match</span><strong id="homeGoals">—</strong></div><div class="stat"><span class="muted">Buts extérieur / match</span><strong id="awayGoals">—</strong></div><div class="stat"><span class="muted">Confrontations</span><strong id="h2h">—</strong></div><div class="stat"><span class="muted">Cotes 1 / N / 2</span><strong id="oddsSummary">—</strong></div></div>
+<p class="small">Les statistiques et les cotes ne s’afficheront que si le fournisseur les renvoie pour ce match.</p></section>
+<section class="card" style="grid-column:1/-1"><div class="row"><h2>Assistant IA SKALAK</h2><span class="tag">Analyse explicative</span></div><p class="muted">Demande une analyse du match sélectionné à partir des statistiques disponibles.</p><textarea id="question" class="field" rows="2" placeholder="Ex. Compare la forme des deux équipes et explique les principaux risques."></textarea><button class="btn" id="analyzeBtn">Générer l’analyse IA</button><p id="aiStatus" class="small">En attente des données du serveur.</p><div class="analysis" id="analysisText">Aucune analyse pour le moment. Connecte les routes d’analyse et le fournisseur IA sur le serveur.</div></section>
+</div><footer>SKALAK ÉLITE — outil d’information sportive. Les cotes évoluent, les données peuvent être incomplètes et aucun pronostic n’est garanti.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);let selectedMatch=null;
+function status(msg,ok=false){$('apiStatus').textContent=msg;$('apiStatus').style.color=ok?'var(--green)':'var(--gold)'}
+function clearAnalysis(){['pHome','pDraw','pAway','homeForm','awayForm','homeGoals','awayGoals','h2h','oddsSummary'].forEach(id=>$(id).textContent='—')}
+async function api(path,opts={}){const r=await fetch(path,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok)throw new Error('Serveur '+r.status+' sur '+path);return r.json()}
+async function loadMatches(){status('Connexion…');$('matchSelect').innerHTML='<option value="">Chargement…</option>';try{const data=await api('/api/fixtures');const matches=Array.isArray(data)?data:(data.matches||data.response||[]);$('matchSelect').innerHTML='';if(!matches.length){$('matchSelect').innerHTML='<option value="">Aucun match renvoyé par le serveur</option>';status('Aucun match');return}matches.forEach((m,i)=>{const home=m.home||m.homeTeam||m.teams?.home?.name||m.teams?.home||'Équipe domicile';const away=m.away||m.awayTeam||m.teams?.away?.name||m.teams?.away||'Équipe extérieur';const id=m.id??m.fixture?.id??i;const o=document.createElement('option');o.value=String(id);o.textContent=home+' — '+away;o.dataset.match=JSON.stringify(m);$('matchSelect').appendChild(o)});status('Matchs chargés',true);selectMatch()}catch(e){$('matchSelect').innerHTML='<option value="">API /api/fixtures non connectée</option>';status('Route serveur manquante');$('matchCard').innerHTML='<div class="teams">Les matchs existent peut-être déjà sur la page principale.</div><p class="muted">Cette interface attend la route serveur <code>/api/fixtures</code>. Il faut relier cette route à la source de matchs utilisée par ton application.</p>';$('aiStatus').textContent=e.message}}
+function selectMatch(){const o=$('matchSelect').selectedOptions[0];if(!o||!o.dataset.match)return;try{selectedMatch=JSON.parse(o.dataset.match)}catch{return}const home=selectedMatch.home||selectedMatch.homeTeam||selectedMatch.teams?.home?.name||'Équipe domicile';const away=selectedMatch.away||selectedMatch.awayTeam||selectedMatch.teams?.away?.name||'Équipe extérieur';const score=selectedMatch.score||selectedMatch.goals;const scoreText=score?(typeof score==='object'?(score.home??'—')+' - '+(score.away??'—'):score):'Score indisponible';$('matchCard').innerHTML='<div class="row"><div class="teams"></div><span class="tag"></span></div><p class="muted"></p>';const els=$('matchCard').children;els[0].children[0].textContent=home+' — '+away;els[0].children[1].textContent=scoreText;els[1].textContent=selectedMatch.league||selectedMatch.competition||'Compétition non précisée';clearAnalysis()}
+async function loadDetails(){if(!selectedMatch){$('aiStatus').textContent='Sélectionne un match.';return} $('aiStatus').textContent='Chargement des statistiques…';try{const d=await api('/api/match-analysis',{method:'POST',body:JSON.stringify({match:selectedMatch,league:$('league').value})});const stats=d.stats||d.statistics||{};const p=d.probabilities||d.probability||{};const odds=d.odds||{};$('pHome').textContent=p.home!=null?p.home+'%':'—';$('pDraw').textContent=p.draw!=null?p.draw+'%':'—';$('pAway').textContent=p.away!=null?p.away+'%':'—';$('homeForm').textContent=stats.homeForm||'—';$('awayForm').textContent=stats.awayForm||'—';$('homeGoals').textContent=stats.homeGoalsPerMatch??'—';$('awayGoals').textContent=stats.awayGoalsPerMatch??'—';$('h2h').textContent=stats.headToHead??'—';$('oddsSummary').textContent=[odds.home??'—',odds.draw??'—',odds.away??'—'].join(' / ');$('analysisText').textContent=d.analysis||'Statistiques chargées. Demande une analyse IA ci-dessous.';$('aiStatus').textContent='Données chargées.'}catch(e){$('aiStatus').textContent='Route /api/match-analysis non configurée : '+e.message;$('analysisText').textContent='Le serveur doit créer /api/match-analysis et renvoyer les statistiques, les cotes disponibles et les probabilités estimées.'}}
+async function generateAI(){if(!selectedMatch){$('aiStatus').textContent='Sélectionne un match avant de demander une analyse.';return}const b=$('analyzeBtn');b.disabled=true;$('aiStatus').textContent='Demande envoyée…';try{const d=await api('/api/ai-analysis',{method:'POST',body:JSON.stringify({match:selectedMatch,question:$('question').value,league:$('league').value})});$('analysisText').textContent=d.analysis||d.message||JSON.stringify(d,null,2);$('aiStatus').textContent='Analyse reçue.'}catch(e){$('aiStatus').textContent='Connexion IA non configurée.';$('analysisText').textContent='La route /api/ai-analysis et une clé de fournisseur IA doivent être configurées côté serveur. Ne place jamais une clé secrète dans ce fichier HTML.'}finally{b.disabled=false}}
+$('matchSelect').addEventListener('change',selectMatch);$('loadBtn').addEventListener('click',loadDetails);$('refreshBtn').addEventListener('click',loadMatches);$('analyzeBtn').addEventListener('click',generateAI);loadMatches();
+</script>
+
+<style>
+.sk-app-extra{font-family:Arial,sans-serif;max-width:980px;margin:18px auto;padding:16px;color:inherit}
+.sk-panel{border:1px solid #c9a646;border-radius:14px;padding:14px;margin:12px 0}
+.sk-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sk-btn{background:#c9a646;color:#111;border:0;border-radius:9px;padding:11px 14px;font-weight:700;cursor:pointer}
+.sk-muted{opacity:.75;font-size:.92rem}
+.sk-result{white-space:pre-wrap;overflow-wrap:anywhere}
+</style>
+<section class="sk-app-extra" aria-label="Outils SKALAK ÉLITE">
+  <div class="sk-panel">
+    <h2>Centre d’analyse SKALAK ÉLITE</h2>
+    <p class="sk-muted">Les données et les pronostics ne s’affichent que si le serveur et les fournisseurs sont configurés. Les probabilités sont des estimations, jamais des garanties.</p>
+    <div class="sk-row">
+      <button class="sk-btn" id="skLoadMatches">Actualiser les matchs</button>
+      <button class="sk-btn" id="skCheckServer">Vérifier le serveur</button>
+    </div>
+    <p id="skStatus" role="status">Prêt à vérifier la connexion.</p>
+    <div id="skMatches"></div>
+  </div>
+  <div class="sk-panel">
+    <h2>Assistant d’analyse IA</h2>
+    <label for="skQuestion">Question sur un match</label>
+    <textarea id="skQuestion" rows="3" style="width:100%;box-sizing:border-box" placeholder="Ex. : compare la forme récente des deux équipes…"></textarea>
+    <div class="sk-row"><button class="sk-btn" id="skAskAI">Demander une analyse</button></div>
+    <div id="skAIResult" class="sk-result" aria-live="polite"></div>
+  </div>
+</section>
+<script>
+(function(){
+  const status = document.getElementById('skStatus');
+  const matches = document.getElementById('skMatches');
+  const aiResult = document.getElementById('skAIResult');
+  async function api(path, opts={}) {
+    const r = await fetch(path, opts);
+    const data = await r.json().catch(()=>({error:'Réponse serveur illisible'}));
+    if (!r.ok) throw new Error(data.error || data.analysis || ('Erreur HTTP '+r.status));
+    return data;
+  }
+  document.getElementById('skCheckServer')?.addEventListener('click', async ()=>{
+    status.textContent = 'Vérification du serveur…';
+    try { const d = await api('/api/health'); status.textContent = 'Serveur accessible. API football : '+(d.football_api_configured?'configurée':'non configurée')+' ; assistant IA : '+(d.ai_configured?'configuré':'non configuré')+'.'; }
+    catch(e){ status.textContent = 'Connexion serveur non disponible : '+e.message; }
+  });
+  document.getElementById('skLoadMatches')?.addEventListener('click', async ()=>{
+    status.textContent = 'Chargement des matchs…'; matches.textContent='';
+    try {
+      const d = await api('/api/fixtures');
+      if (!d.matches || !d.matches.length) { matches.textContent = d.error || 'Aucun match retourné pour le moment.'; status.textContent='Chargement terminé.'; return; }
+      d.matches.forEach(m=>{
+        const el=document.createElement('div'); el.className='sk-panel';
+        const score=(m.score && m.score.home!=null && m.score.away!=null)?` — ${m.score.home} : ${m.score.away}`:'';
+        el.textContent=`${m.home||'Équipe domicile'} vs ${m.away||'Équipe extérieure'}${score}\n${m.league||''}\n${m.status||''}`;
+        const btn=document.createElement('button'); btn.className='sk-btn'; btn.textContent='Analyser ce match';
+        btn.addEventListener('click', async ()=>{
+          el.appendChild(document.createElement('hr'));
+          const p=document.createElement('p'); p.textContent='Préparation de l’analyse…'; el.appendChild(p);
+          try { const a=await api('/api/match-analysis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({match:m})}); p.textContent=a.analysis||JSON.stringify(a); }
+          catch(e){ p.textContent='Analyse non disponible : '+e.message; }
+        });
+        el.appendChild(btn); matches.appendChild(el);
+      });
+      status.textContent=`${d.matches.length} match(s) reçu(s).`;
+    } catch(e){ status.textContent='Impossible de charger les matchs : '+e.message; }
+  });
+  document.getElementById('skAskAI')?.addEventListener('click', async ()=>{
+    const question=document.getElementById('skQuestion').value.trim();
+    if(!question){aiResult.textContent='Écris d’abord ta question.';return;}
+    aiResult.textContent='L’assistant prépare la réponse…';
+    try { const d=await api('/api/ai-analysis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question})}); aiResult.textContent=d.analysis||JSON.stringify(d); }
+    catch(e){aiResult.textContent='Assistant non disponible : '+e.message;}
+  });
+})();
+</script>
+
+</body></html>
